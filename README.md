@@ -1,4 +1,4 @@
-# Hackenza Project Proposal | Team Vicodin
+# Hackenza Proposal | Team Vicodin
 
 ## Problem Statement
 
@@ -10,7 +10,7 @@ We plan to tackle the problem in three phases:
 
 ### Research Phase
 
-Root cause analysis for network delays lies at the heart of the problem statement. Acknowledging that our team isn’t the best versed with networks, our very first step would be to catch ourselves upto speed with some networks theory. Through this phase, we aim to acclimatise ourselves with various delay/jitter detection algorithms. We have shortlisted the following resources for the same:
+Root cause analysis for network delays lies at the heart of the problem statement. Acknowledging that our team isn’t the best versed with networks, our very first step would be to catch ourselves upto speed with some networks theory. Through this phase, we aim to acclimatise ourselves with various delay /jitter detection algorithms. We have shortlisted the following resources for the same:
 
 - Packet Vs. Flow: A Look at Network Traffic Analysis Techniques - [https://www.liveaction.com/resources/solution-briefs/packet-vs-flow-a-look-at-network-traffic-analysis-techniques/](https://www.liveaction.com/resources/solution-briefs/packet-vs-flow-a-look-at-network-traffic-analysis-techniques/) (Article)
 - Analysis of End-to-End Packet Delay for Internet of Things in Wireless Communications - [https://thesai.org/Downloads/Volume9No9/Paper_44-Analysis_of_End_to_End_Packet_Delay.pdf](https://thesai.org/Downloads/Volume9No9/Paper_44-Analysis_of_End_to_End_Packet_Delay.pdf) (Research Paper)
@@ -25,15 +25,15 @@ Root cause analysis for network delays lies at the heart of the problem statemen
 
 Having gained some familiarity with the domain of networks, we will implement the network delay analyser in the development phase.
 
-We plan to implement the tool in a multi-view fashion, with each view catering to a network access level (admin/user). These views will not function as actual access controls, and will be unique to each ‘user’ of the application; we are not implementing a system where we have multiple users of the application assigned user/admin roles. Instead, once each user uploads their data, they will be able to access multiple dashboards.
+We plan to implement the tool in a multi-view fashion, with each view catering to a network access level (user / admin). These views will not function as actual access controls, and will be unique to each ‘user’ of the application; we are not implementing a system where we have multiple users of the application assigned user / admin roles. Instead, once each user uploads their data, they will be able to access multiple dashboards.
 
-The admin dashboard will provide a comprehensive, global analysis of the entire network, including delays originating from all nodes of the network. The user dashboard, on the other hand, will offer a personalised view displaying processed data corresponding to a particular source. The isolation of information into admin and user views is one of our elements of novelty, and will serve as an crafting an effective analysis tool. Once a pattern of delays has been identified using the admin view, the user can dig deeper into the root cause analysis by viewing individual network nodes / node groups.
+The admin dashboard will provide a comprehensive, global analysis of the entire network, including delays originating from all nodes of the network. The user dashboard, on the other hand, will offer a personalised view displaying processed data corresponding to a particular source. The isolation of information into admin and user views is one of our elements of novelty, and will serve as an effective analysis tool. Once a pattern of delays has been identified using the admin view, the user can dig deeper into the root cause analysis by viewing individual network nodes / node groups.
 
 We also plan to implement custom classification and filtering rules. While we will provide as comprehensive a list of presets as we are, we will also allow application users to alter these defaults per their convenience. 
 
-The backend will handle file uploads and processing using Python. When a `.pcapng` file is uploaded, it will be stored temporarily before being parsed with packet analysis tools to extract essential metrics such as timestamps, IP addresses, and delay indicators. Custom filtering routines will then isolate data relevant only to the user, ensuring that each individual sees only their own network information. This preprocessed data will be structured and stored in our time-series database, InfluxDB, which will serve as the backbone for real-time analysis and reporting.
+The backend will handle file uploads and processing using Python. When a `.pcapng` file is uploaded, it will be stored temporarily before being parsed with packet analysis tools to extract essential metrics such as timestamps, IP addresses, and delay indicators. Custom filtering routines will then isolate data relevant only to a particular user. This preprocessed data will be structured and stored in our time-series database, InfluxDB, which will serve as the backbone for real-time analysis and reporting.
 
-Following preprocessing, custom detection algorithms will analyse the filtered data to pinpoint network delays and potential causes—whether these are due to retransmissions, congestion, or other factors. The analytical results, including both detailed reports for Admins and high-level summaries for Users, will be visualised using Grafana dashboards, which will be integrated into our portal. This approach provides dynamic, interactive views allowing continuous monitoring.
+Following preprocessing, custom detection algorithms will analyse the filtered data to pinpoint network delays and potential causes - whether these are due to retransmissions, congestion, or other factors. The analytical results, both for admins and users, will be visualised using Grafana dashboards, which will be integrated into our portal. This approach provides dynamic, interactive views allowing continuous monitoring.
 
 ### Testing and Deployment Phase
 
@@ -58,7 +58,7 @@ In this phase, we plan to perform an optimisation pass through the entire analys
 
 ![ui.png](./ui.png)
 
-### The Team
+## The Team
 
 - Manit:
     - Working at DaSH Lab in the domain of Federated Learning (FL) since sem 1, 2023, and Machine Learning, specifically Vision Transformers since sem 1, 2024. Project Co-Lead for SAM (Segment Anything Model) project.
@@ -69,9 +69,9 @@ In this phase, we plan to perform an optimisation pass through the entire analys
     - Proficient in python, with experience in working with services such as Grafana, InfluxDB, Prometheus and Telegraf.
     - Currently enrolled in the Network Programming Course taken by Vinayak sir.
 - Ananya:
-    - Proficient in front end development using ReactJs and back end development using MongoDB.
-    - Experience in Python programming; was a part of the special project "BITS Auto" under the guidance of Prof. Neena.
+    - Proficient in front-end development using ReactJs and back-end development using MongoDB.
+    - Experience in Python programming; was a part of the special project 'BITS Auto' under the guidance of Prof. Neena.
 - Tejas:
-    - Experience in Python programming; was a part of the special project "BITS Auto" under the guidance of Prof. Neena.
-    - Worked for creating an object detection model using YOLO for an autonomous underwater vehicle, other aspects of the vehicle.
+    - Experience in Python programming; was a part of the special project 'BITS Auto' under the guidance of Prof. Neena.
+    - Worked on creating an object detection model using YOLO for an autonomous underwater vehicle.
     - Working on implementing the DSOR-Farol stack for the simulation of a swarm of underwater vehicles in gazebo.
