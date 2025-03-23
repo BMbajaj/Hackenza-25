@@ -200,5 +200,5 @@ if __name__ == "__main__":
     total_loss, ip_loss, total_packets = analyze_pcapng(pcapng_file)
     final_layout = create_layout(total_loss, ip_loss, total_packets)
 
-    output_file("packet_loss_analysis_with_loss_percentage.html")
+    output_file("plot8.html")
     show(final_layout)

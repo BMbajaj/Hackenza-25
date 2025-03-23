@@ -81,7 +81,7 @@ def create_bokeh_visualization(ip_delays, all_ip_delays):
       - A single hover tooltip that displays the full breakdown.
     """
     # Name of the output file
-    output_file("20_11_24_bro_laptop_60ms_2min.html")
+    output_file("plot9.html")
     
     types = ["spurious", "fast", "timeout"]
     ips = list(ip_delays.keys())

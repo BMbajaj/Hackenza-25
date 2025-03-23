@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hello1 Dashboard</title>
+    <link rel="stylesheet" href="./App.css" />
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="logo">
+          <a href="index.html" class="Home-link">NetLogAnalyzer</a>
+        </div>
+        <nav class="nav">
+          <ul>
+            <li><a href="hello1.html" class="link">Dashboard 1</a></li>
+            <li><a href="hello2.html" class="link">Dashboard 2</a></li>
+            <li><a href="hello3.html" class="link">Dashboard 3</a></li>
+          </ul>
+        </nav>
+      </div>
+      
+      <!-- Dashboard / Main View Area -->
+      <div class="dashboard">
+        <!-- Top Bar -->
+        <div class="top-bar">
+          <h2>Network Delay Analysis Dashboard</h2>
+          <div class="actions" id="actionsContainer">
+            <!-- Initially, a Login button is shown -->
+            <button id="loginBtn" onclick="window.location.href='http://localhost:5000/login'">
+              Login
+            </button>
+            <button id="uploadBtn">Upload</button>
+          </div>
+        </div>
+        
+        <!-- Plot Area -->
+        <div class="plot-container" id="plotContainer">
+          <!-- The iframe below will load Plot1 for the current logged-in user -->
+        </div>
+      </div>
+    </div>
+    
+    <!-- Inline script to check login status, update the top bar, and load the correct plot -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const storedName = localStorage.getItem("userName");
+        const storedEmail = localStorage.getItem("userEmail");
+        const actionsDiv = document.getElementById("actionsContainer");
+        const uploadBtn = document.getElementById("uploadBtn");
+        const plotContainer = document.getElementById("plotContainer");
+
+        // Set Upload button behavior: if user is logged in, open upload.html in a new tab; if not, alert.
+        uploadBtn.addEventListener("click", function () {
+          if (!storedName || !storedEmail) {
+            alert("Please log in to upload files.");
+          } else {
+            window.open("upload.html", "_blank");
+          }
+        });
+
+        if (storedName && storedEmail) {
+          // Replace the Login button with a profile icon and dropdown
+          actionsDiv.innerHTML = `
+            <div class="profile-wrapper">
+              <div class="profile-icon" id="profileIcon">${storedName.charAt(0).toUpperCase()}</div>
+              <div class="profile-dropdown" id="profileDropdown" style="display: none;">
+                <p>${storedName}</p>
+                <button id="logoutBtn">Logout</button>
+              </div>
+            </div>
+            <button id="uploadBtn">Upload</button>
+          `;
+          // Re-attach event listener to the new Upload button
+          document.getElementById("uploadBtn").addEventListener("click", function () {
+            if (!storedName || !storedEmail) {
+              alert("Please log in to upload files.");
+            } else {
+              window.open("upload.html", "_blank");
+            }
+          });
+          document.getElementById("profileIcon").addEventListener("click", function () {
+            const dropdown = document.getElementById("profileDropdown");
+            dropdown.style.display = (dropdown.style.display === "none" ? "block" : "none");
+          });
+          document.getElementById("logoutBtn").addEventListener("click", function () {
+            localStorage.removeItem("userName");
+            localStorage.removeItem("userEmail");
+            window.location.reload();
+          });
+          // Load Plot1 for hello1.html using the current user's email
+          plotContainer.innerHTML = `<iframe src="http://localhost:5000/userPlot8?email=${encodeURIComponent(storedEmail)}" style="width: 100%; height: 80vh; border: none;"></iframe>`;
+        } else {
+          // If no user is logged in, show the Login button and a message in the plot area
+          actionsDiv.innerHTML = `
+            <button id="loginBtn" onclick="window.location.href='http://localhost:5000/login'">Login</button>
+            <button id="uploadBtn">Upload</button>
+          `;
+          uploadBtn.addEventListener("click", function () {
+            alert("Please log in to upload files.");
+          });
+          plotContainer.innerHTML = `<p style="text-align:center; font-size:1.2rem; margin-top: 2rem;">Please log in to view your plot.</p>`;
+        }
+      });
+    </script>
+  </body>
+</html>

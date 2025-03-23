@@ -2,12 +2,29 @@ import React, { useState } from "react";
 
 const categories = [
   {
-    title: "Category 1",
+    title: "RTT ACK Analysis",
     links: [
       { href: "hello1.html", label: "Dashboard 1" },
       { href: "hello2.html", label: "Dashboard 2" },
       { href: "hello3.html", label: "Dashboard 3" },
     ],
+  },
+  {
+    title: "Protocol Analysis",
+    links: [
+      { href: "hello4.html", label: "Dashboard 4" },
+      { href: "hello5.html", label: "Dashboard 5" },
+      { href: "hello6.html", label: "Dashboard 6" },
+      { href: "hello7.html", label: "Dashboard 7" },
+    ],
+  },
+  {
+    title: "Packet Loss",
+    links: [{ href: "hello8.html", label: "Dashboard 8" }],
+  },
+  {
+    title: "Source Retransmission",
+    links: [{ href: "hello9.html", label: "Dashboard 9" }],
   },
 ];
 
