@@ -105,9 +105,9 @@ bar_chart.y_range.start = 0
 bar_chart.xaxis.major_label_orientation = 1
 
 # Save bar chart
-output_file("bar_chart.html")
+output_file("plot6.html")
 save(bar_chart)
-print("Bar chart saved as 'bar_chart.html'.")
+print("Bar chart saved as 'plot6.html'.")
 
 print("Creating data table...")
 ##############################################
@@ -138,9 +138,9 @@ data_table = DataTable(source=table_source, columns=columns, width=500, height=2
 
 # Save data table in its own HTML file (wrapped in a layout)
 table_layout = column(data_table)
-output_file("data_table.html")
+output_file("plot5.html")
 save(table_layout)
-print("Data table saved as 'data_table.html'.")
+print("Data table saved as 'plot5.html'.")
 
 print("Creating pie chart with increased size...")
 ##############################################
@@ -201,9 +201,9 @@ pie_chart.axis.visible = False
 pie_chart.grid.grid_line_color = None
 
 # Save pie chart
-output_file("pie_chart.html")
+output_file("plot4.html")
 save(pie_chart)
-print("Larger pie chart saved as 'pie_chart.html'.")
+print("Larger pie chart saved as 'plot4.html'.")
 
 print("Creating top conversations charts...")
 ##############################################
@@ -313,15 +313,15 @@ for protocol, conversations in protocol_conversations.items():
             all_charts.append(layout)
 
 # Arrange all charts in a grid
-if all_charts:
-    grid = gridplot(all_charts, ncols=1)
+# if all_charts:
+#     grid = gridplot(all_charts, ncols=1)
     
-    # Save the conversation charts
-    output_file("top_conversations.html")
-    save(grid)
-    print("Top conversations charts saved as 'top_conversations.html'.")
-else:
-    print("No conversation data to visualize.")
+#     # Save the conversation charts
+#     output_file("top_conversations.html")
+#     save(grid)
+#     print("Top conversations charts saved as 'top_conversations.html'.")
+# else:
+#     print("No conversation data to visualize.")
 
 print("Creating dashboard...")
 ##############################################
@@ -411,9 +411,9 @@ dashboard_layout = column(
 )
 
 # Save dashboard
-output_file("protocol_analysis_dashboard.html")
-save(dashboard_layout)
-print("Complete dashboard saved as 'protocol_analysis_dashboard.html'.")
+# output_file("protocol_analysis_dashboard.html")
+# save(dashboard_layout)
+# print("Complete dashboard saved as 'protocol_analysis_dashboard.html'.")
 
 ##############################################
 # 6. NEW IMPROVED: Protocol Selector Dashboard with Dropdown, Side-by-Side Layout, and Indexed IPs
@@ -573,8 +573,8 @@ else:
     )
     
     # Save as a standalone HTML file
-    output_file("protocol_selector_improved.html")
+    output_file("plot7.html")
     save(layout)
-    print("Improved protocol selector dashboard saved as 'protocol_selector_improved.html'.")
+    print("Improved protocol selector dashboard saved as 'plot7.html'.")
 
 print("Analysis complete. All visualizations have been saved.")
