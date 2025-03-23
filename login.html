@@ -5,58 +5,213 @@
     <title>Login / Signup</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
+      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+      :root {
+        --primary-color: #6c5ce7;
+        --primary-hover: #8075e5;
+        --background: #121212;
+        --card-bg: #1e1e1e;
+        --text-primary: #f1f1f1;
+        --text-secondary: #a0a0a0;
+        --border-color: #333;
+        --input-bg: #2a2a2a;
+        --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        --transition: all 0.3s ease;
+        --success-color: #00b894;
+        --error-color: #e74c3c;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
       body {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        margin-top: 50px;
-        background-color: #f0f0f0;
+        font-family: 'Poppins', sans-serif;
+        background: var(--background);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #121212 0%, #2d3436 100%);
+        color: var(--text-primary);
       }
+
       .auth-container {
-        display: inline-block;
-        background: #fff;
-        padding: 20px;
-        border: 1px solid #ddd;
+        background: var(--card-bg);
+        padding: 40px 30px;
+        border-radius: 12px;
+        box-shadow: var(--box-shadow);
+        width: 100%;
+        max-width: 400px;
+        overflow: hidden;
+        position: relative;
+        transform: translateY(20px);
+        animation: fadeIn 0.5s ease forwards;
+        border: 1px solid #333;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      h2 {
+        color: var(--text-primary);
+        margin-bottom: 30px;
+        font-weight: 600;
+        position: relative;
+      }
+
+      h2::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 3px;
+        background: var(--primary-color);
+        border-radius: 10px;
+      }
+
+      input {
+        width: 100%;
+        padding: 12px 15px;
+        margin-bottom: 15px;
+        border: 1px solid var(--border-color);
         border-radius: 6px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: var(--transition);
+        outline: none;
+        font-family: 'Poppins', sans-serif;
+        background: var(--input-bg);
+        color: var(--text-primary);
       }
-      .auth-container input {
-        display: block;
-        margin: 10px auto;
-        padding: 8px;
-        width: 250px;
+
+      input::placeholder {
+        color: var(--text-secondary);
       }
-      .auth-container button {
-        margin: 10px 5px;
-        padding: 8px 15px;
+
+      input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+      }
+
+      button {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 12px 0;
+        width: 100%;
+        border-radius: 6px;
         cursor: pointer;
+        font-weight: 500;
+        transition: var(--transition);
+        margin-top: 5px;
+        font-family: 'Poppins', sans-serif;
       }
+
+      button:hover {
+        background: var(--primary-hover);
+        transform: translateY(-2px);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      .toggle-container {
+        margin-top: 20px;
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+
       .toggle-link {
-        color: blue;
+        color: var(--primary-color);
         cursor: pointer;
+        font-weight: 500;
+        transition: var(--transition);
+      }
+
+      .toggle-link:hover {
+        color: var(--primary-hover);
         text-decoration: underline;
       }
+
       #message {
-        margin-top: 10px;
-        color: red;
+        margin-top: 15px;
+        color: var(--error-color);
+        font-size: 14px;
+        height: 20px;
+      }
+
+      .form-container {
+        position: relative;
+        transition: transform 0.6s ease;
+      }
+
+      input[type="text"], input[type="email"], input[type="password"] {
+        transform: translateX(0);
+        transition: all 0.3s ease;
+      }
+
+      .pulse {
+        animation: pulse 0.5s;
+      }
+
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+      }
+
+      .shake {
+        animation: shake 0.5s;
+      }
+
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+      }
+
+      .glow {
+        animation: glow 1.5s infinite alternate;
+      }
+
+      @keyframes glow {
+        from {
+          box-shadow: 0 0 5px rgba(108, 92, 231, 0.2);
+        }
+        to {
+          box-shadow: 0 0 15px rgba(108, 92, 231, 0.6);
+        }
       }
     </style>
   </head>
   <body>
     <div class="auth-container">
       <h2 id="formTitle">Login</h2>
-      <form id="authForm">
-        <!-- Name field shown only in signup mode -->
-        <input type="text" id="name" placeholder="Full Name (For Signup Only)" style="display: none;" />
-        <input type="email" id="email" placeholder="Email" required />
-        <input type="password" id="password" placeholder="Password" required />
-        <div>
+      <div class="form-container">
+        <form id="authForm">
+          <input type="text" id="name" placeholder="Full Name" style="display: none;" />
+          <input type="email" id="email" placeholder="Email Address" required />
+          <input type="password" id="password" placeholder="Password" required />
           <button type="button" id="submitBtn">Login</button>
-        </div>
-      </form>
-      <p>
+        </form>
+      </div>
+      <div class="toggle-container">
         <span id="toggleText">Don't have an account?</span>
         <span class="toggle-link" id="toggleLink">Sign Up</span>
-      </p>
+      </div>
       <p id="message"></p>
     </div>
 
@@ -68,10 +223,24 @@
       const nameField = document.getElementById("name");
       const toggleText = document.getElementById("toggleText");
       const messageEl = document.getElementById("message");
+      const formContainer = document.querySelector(".form-container");
+      const authContainer = document.querySelector(".auth-container");
 
       // Toggle between Login and Signup mode
       toggleLink.addEventListener("click", () => {
         isSignupMode = !isSignupMode;
+        
+        // Add animation
+        formContainer.style.transform = "translateX(-10px)";
+        setTimeout(() => {
+          formContainer.style.transform = "translateX(0)";
+        }, 300);
+        
+        authContainer.classList.add("pulse");
+        setTimeout(() => {
+          authContainer.classList.remove("pulse");
+        }, 500);
+
         if (isSignupMode) {
           formTitle.textContent = "Sign Up";
           submitBtn.textContent = "Sign Up";
@@ -99,12 +268,26 @@
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value.trim();
 
+        // Add button animation
+        submitBtn.style.transform = "scale(0.95)";
+        setTimeout(() => {
+          submitBtn.style.transform = "scale(1)";
+        }, 150);
+
         if (!validateEmail(email)) {
           messageEl.textContent = "Please enter a valid email address.";
+          document.getElementById("email").classList.add("shake");
+          setTimeout(() => {
+            document.getElementById("email").classList.remove("shake");
+          }, 500);
           return;
         }
         if (isSignupMode && name === "") {
           messageEl.textContent = "Please enter your full name for signup.";
+          document.getElementById("name").classList.add("shake");
+          setTimeout(() => {
+            document.getElementById("name").classList.remove("shake");
+          }, 500);
           return;
         }
 
@@ -120,16 +303,27 @@
           const data = await res.json();
           messageEl.textContent = data.message;
           // On successful login, store userName and userEmail and redirect to index.html
-          if (!isSignupMode && data.message.includes("Welcome back")) {
+          if (!isSignupMode && data.message && data.message.includes("Welcome back")) {
             if (data.user && data.user.name && data.user.email) {
               localStorage.setItem("userName", data.user.name);
               localStorage.setItem("userEmail", data.user.email);
               console.log("Login done");
-              window.location.href = "index.html";
+              
+              // Add success animation before redirect
+              authContainer.classList.add("glow");
+              messageEl.style.color = "#00b894";
+              messageEl.textContent = "Login successful! Redirecting...";
+              setTimeout(() => {
+                window.location.href = "index.html";
+              }, 1200);
             }
           }
         } catch (error) {
           messageEl.textContent = "An error occurred.";
+          authContainer.classList.add("shake");
+          setTimeout(() => {
+            authContainer.classList.remove("shake");
+          }, 500);
         }
       });
     </script>
