@@ -5,7 +5,23 @@
 NetDelayAnalyser is a web-based packet capture analysis tool.
 
 ## Installation and Setup
-
+- pip Packages :
+    bokeh
+    numpy
+    pyshark
+    sys
+    math
+    collections
+    scapy (rdpcap, TCP, IP)
+    pandas
+    
+- npm packages
+    npm≥20
+    vite
+    nodejs≥20
+    bootstrap
+    react-router-dom
+  
 ## Feature Details
 
 The analysis we were able to implement for delay categorisation and congestion / bottleneck identification was threefold:
