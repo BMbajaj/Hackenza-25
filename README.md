@@ -20,7 +20,7 @@ NetDelayAnalyser is a web-based packet capture analysis tool.
     vite,
     nodejs≥20,
     bootstrap,
-    react-router-dom,
+    react-router-dom
   
 ## Feature Details
 
