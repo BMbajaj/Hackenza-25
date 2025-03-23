@@ -1,77 +1,81 @@
-# Hackenza Proposal | Team Vicodin
+# NetDelayAnalyser | Team Vicodin
 
-## Problem Statement
+## Introduction
 
-Characterisation of Delays in Packet Transmission
+NetDelayAnalyser is a web-based packet capture analysis tool.
 
-## Approach
+## Installation and Setup
+- pip packages :
+    bokeh,
+    numpy,
+    pyshark,
+    sys,
+    math,
+    collections,
+    scapy (rdpcap, TCP, IP),
+    pandas
+    
+- npm packages :
+    npm≥20,
+    vite,
+    nodejs≥20,
+    bootstrap,
+    react-router-dom
+  
+## Feature Details
 
-We plan to tackle the problem in three phases:
+The analysis we were able to implement for delay categorisation and congestion / bottleneck identification was threefold:
 
-### Research Phase
+### Round Trip Time Analysis
 
-Root cause analysis for network delays lies at the heart of the problem statement. Acknowledging that our team isn’t the best versed with networks, our very first step would be to catch ourselves upto speed with some networks theory. Through this phase, we aim to acclimatise ourselves with various delay /jitter detection algorithms. We have shortlisted the following resources for the same:
+- This line of analysis deals exclusively with TCP packets, as MQTT primarily uses TCP for communication. Furthermore, most of the packets in the example files present in the problem statement were also communicated through TCP, further reinforcing the design decision of focussing heavily on TCP.
+- We further divide our Round Trip Analysis into three separate filtered categories:
+    - Filtered by conversation: For each conversation, i.e. communication between an IP pair, we plot:
+        - RTT, which is present in the packet containing the acknowledgement message sent by the receiver.
+        - Delay, which is computed as the logged time difference between two successive packets in the capture.
+        - Correlation between outliers and packet length (NOTE: we noticed that a significant proportion of outliers all belonged to the same ‘category’ of packet, viz. packets containing acknowledgement messages. Upon digging deeper, we found that this is not a ‘delay’ but rather a TCP optimisation. The protocol itself might delay the sending of the acknowledgement message. Suppose a message was sent from node A to node B. The protocol might wait for a packet to be queued to be send from B back to A, and then piggyback the acknowledgement message onto this packet, thereby preventing an additional packet containing very little information to be sent).
+    - Filtered by source: This is an analysis view for plotting round trip time and outlier correlation based on source IP. The motivation behind this is to identify which individual IPs are causing the greatest round trip time delays.
+    - No filter / global: This is a cumulative analysis view across all conversations of the packet capture. We plot the following:
+        - The percentage of outliers (mean + 2 * stdev) for round trip time grouped by source IP.
+        - The percentage of outliers for delay, grouped by source IP.
+        - Correlation of packet length and RTT across all packets.
 
-- Packet Vs. Flow: A Look at Network Traffic Analysis Techniques - [https://www.liveaction.com/resources/solution-briefs/packet-vs-flow-a-look-at-network-traffic-analysis-techniques/](https://www.liveaction.com/resources/solution-briefs/packet-vs-flow-a-look-at-network-traffic-analysis-techniques/) (Article)
-- Analysis of End-to-End Packet Delay for Internet of Things in Wireless Communications - [https://thesai.org/Downloads/Volume9No9/Paper_44-Analysis_of_End_to_End_Packet_Delay.pdf](https://thesai.org/Downloads/Volume9No9/Paper_44-Analysis_of_End_to_End_Packet_Delay.pdf) (Research Paper)
-- Measurement of Internet Access Latency: A Cross-Dataset Comparison - [https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4909679](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4909679) (Research Paper)
-- Response Time Analysis for RT-MQTT Protocol Grounded on SDN - [https://drops.dagstuhl.de/storage/01oasics/oasics-vol108-ng-res2023/OASIcs.NG-RES.2023.5/OASIcs.NG-RES.2023.5.pdf](https://drops.dagstuhl.de/storage/01oasics/oasics-vol108-ng-res2023/OASIcs.NG-RES.2023.5/OASIcs.NG-RES.2023.5.pdf) (Research Paper)
-- Correlation Analysis of MQTT Loss and Delay According to QoS Level - [https://ieeexplore.ieee.org/document/6496715](https://ieeexplore.ieee.org/document/6496715) (Research Paper)
-- What is Log Analysis? Process, Techniques, and Best Practices - [https://www.exabeam.com/explainers/log-management/what-is-log-analysis-process-techniques-and-best-practices/](https://www.exabeam.com/explainers/log-management/what-is-log-analysis-process-techniques-and-best-practices/) (Article)
-- What is Log Analysis? Overview and Best Practices - [https://www.logicmonitor.com/blog/log-analysis](https://www.logicmonitor.com/blog/log-analysis) (Article)
-- Delay and Energy Consumption of MQTT over QUIC: An Empirical Characterisation Using Commercial-Off-The-Shelf Devices  - [https://www.mdpi.com/1424-8220/22/10/3694](https://www.mdpi.com/1424-8220/22/10/3694) (Research Paper)
+### Protocol Distribution Analysis
 
-### Development Phase
+- This line of analysis is meant to help identify congestion in the network.
+- First, we plot the total delta time (time between successive packets being captured in the packet capture) for each individual transfer protocol encountered. The purpose of this is to indicate to the application programmer where the network is spending a majority of its time.
+- We next identify the IP pairs which communicate the most for a given protocol, based on the number of packets transmitted between two given IP addresses. The purpose behind this is to identify bottlenecks in the network; if a single pair of addresses is overly burdened, the network designer could consider increasing bandwidth between those two IPs, thereby leading to performance gains.
 
-Having gained some familiarity with the domain of networks, we will implement the network delay analyser in the development phase.
+### Packet Loss Analysis
 
-We plan to implement the tool in a multi-view fashion, with each view catering to a network access level (user / admin). These views will not function as actual access controls, and will be unique to each ‘user’ of the application; we are not implementing a system where we have multiple users of the application assigned user / admin roles. Instead, once each user uploads their data, they will be able to access multiple dashboards.
+- The pie chart represents the proportion of packets lost after grouping them on the basis of
+    - Retransmissions - Repeated acknowledgment packets sent by the receiver for the same sequence number, signaling a missing packet and prompting retransmission.
+    - Lost segments - Occur due to network congestion, transmission errors, or unstable links, resulting in dropped packets.
+    - Spurious Retransmissions -  Triggered by delayed acknowledgments or path asymmetry, leading to unnecessary retransmissions.
+    - Duplicate ACKs - Result from a missing packet in the sequence, causing the receiver to repeatedly acknowledge the last successfully received packet.
+- It then displays this data in tabular format to display the number of packets lost
+- It gives a percentage of how many packets out of the total were lost
+- It creates a stacked bar graph of IPs that contribute more than 5% of the total packets lost to pinpoint the possible sources of the most packet loss. This stacked bar graph is also subdivided like the pie chart
 
-The admin dashboard will provide a comprehensive, global analysis of the entire network, including delays originating from all nodes of the network. The user dashboard, on the other hand, will offer a personalised view displaying processed data corresponding to a particular source. The isolation of information into admin and user views is one of our elements of novelty, and will serve as an effective analysis tool. Once a pattern of delays has been identified using the admin view, the user can dig deeper into the root cause analysis by viewing individual network nodes / node groups.
+### Retransmission Delay Analysis
 
-We also plan to implement custom classification and filtering rules. While we will provide as comprehensive a list of presets as we are, we will also allow application users to alter these defaults per their convenience. 
+- This analysis uses thresholding to find out the possible sources of transmission delays and specifically retransmission delays. It only displays IPs that contribute more than 5% of the total retransmission delay time
+- It creates a stacked bar graph representing the total retransmission delay of an ip after grouping the delays on the basis of
+    - **Spurious Retransmissions**: Caused by delayed acknowledgments or path asymmetry, leading to unnecessary retransmissions.
+    - **Fast Retransmissions**: Triggered by three duplicate ACKs, indicating packet loss and prompting immediate retransmission.
+    - **Timeout Retransmissions**: Occur when the sender does not receive an acknowledgment within the retransmission timeout (RTO) period.
 
-The backend will handle file uploads and processing using Python. When a `.pcapng` file is uploaded, it will be stored temporarily before being parsed with packet analysis tools to extract essential metrics such as timestamps, IP addresses, and delay indicators. Custom filtering routines will then isolate data relevant only to a particular user. This preprocessed data will be structured and stored in our time-series database, InfluxDB, which will serve as the backbone for real-time analysis and reporting.
+### Individual Graph Plotting
 
-Following preprocessing, custom detection algorithms will analyse the filtered data to pinpoint network delays and potential causes - whether these are due to retransmissions, congestion, or other factors. The analytical results, both for admins and users, will be visualised using Grafana dashboards, which will be integrated into our portal. This approach provides dynamic, interactive views allowing continuous monitoring.
+- While our tool is accompanied by a website, where all our plots and aggregated and displayed, the scripts present in the `plotting_scripts` directory can also be used independently.
+- They can be called as follows: `python3 <plotting-script>.py <capture-file>.pcapng` (assuming the capture file is present in the same directory as the plotting script.
+- Each script generates interactive plots using the `bokeh` library. In some cases, the plots are standalone, whereas in other cases, they have been grouped together (depending on how we planned to use them within the website). Regardless, they will still be accessible in any browser.
 
-### Testing and Deployment Phase
+## Future Work
 
-With the conclusion of the development phase, we will have a fully functional network delay analysis tool, which can be run locally on the user’s machine. The focus of the testing and deployment phase would be to extend the functionalities of this tool in a scalable and efficient manner.
+While we *were* able to implement a fair share of what we initially planned to, we were certainly not able to implement everything. The following are tasks we plan to work on in the future:
 
-In this phase, we plan to perform an optimisation pass through the entire analysis pipeline, addressing any potential performance issues. Once every element of the broader system (primarily upload handling, data processing, visualisation) has been validated with sample data, we will deploy our application to a cloud platform with appropriate measures to ensure scaling and availability.
-
-## Additional Details
-
-### Summary of Our Tech Stack
-
-| Component | Technology of Choice |
-| --- | --- |
-| Packet Capture (for testing) | Wireshark |
-| Packet Parsing | Scapy |
-| Backend  | Python (FastAPI or Flask) |
-| Data Storage | InfluxDB |
-| Frontend Framework | React.js |
-| Visualisation | Grafana |
-
-### Tentative UI Design and Layout
-
-![ui.png](./ui.png)
-
-## The Team
-
-- Manit:
-    - Working at DaSH Lab in the domain of Federated Learning (FL) since sem 1, 2023, and Machine Learning, specifically Vision Transformers since sem 1, 2024. Project Co-Lead for SAM (Segment Anything Model) project.
-    - Proficient in python, with experience in working with large codebases.
-    - Currently enrolled in the Network Programming Course taken by Vinayak sir.
-- Bhavya:
-    - Working at DaSH Lab in the domain of Parallel File Systems (PFS) since sem 1, 2023, and Machine Learning, specifically Vision Transformers since sem 1, 2024. Project Co-Lead for the PFS and SAM projects.
-    - Proficient in python, with experience in working with services such as Grafana, InfluxDB, Prometheus and Telegraf.
-    - Currently enrolled in the Network Programming Course taken by Vinayak sir.
-- Ananya:
-    - Proficient in front-end development using ReactJs and back-end development using MongoDB.
-    - Experience in Python programming; was a part of the special project 'BITS Auto' under the guidance of Prof. Neena.
-- Tejas:
-    - Experience in Python programming; was a part of the special project 'BITS Auto' under the guidance of Prof. Neena.
-    - Worked on creating an object detection model using YOLO for an autonomous underwater vehicle.
-    - Working on implementing the DSOR-Farol stack for the simulation of a swarm of underwater vehicles in gazebo.
+- Adding functionality to categorise more kinds of delays, as well as other metrics which would focus on other protocols.
+- Integrating exporting functionality within the website (although the end user can still obtain these plots by running the plotting scripts manually).
+- Adding summary statistics to the dashboard page (the ones currently present are placeholder values).
+- And many more…
