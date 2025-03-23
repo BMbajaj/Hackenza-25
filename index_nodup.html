@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiple File Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .upload-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 500px;
+            max-width: 90%;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .upload-btn {
+            background-color: #4285f4;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            margin-bottom: 10px;
+        }
+        
+        .upload-btn:hover {
+            background-color: #3367d6;
+        }
+        
+        .upload-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        #selected-files {
+            margin: 15px 0;
+            text-align: left;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        #status {
+            margin-top: 20px;
+            color: #333;
+        }
+        
+        .file-item {
+            margin: 5px 0;
+            padding: 5px;
+            background-color: #f1f1f1;
+            border-radius: 3px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .file-item.duplicate {
+            background-color: #ffebee;
+            border-left: 3px solid #f44336;
+        }
+        
+        .duplicate-warning {
+            color: #f44336;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .upload-stats {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .upload-count {
+            font-weight: bold;
+            font-size: 18px;
+            color: #4285f4;
+            margin-bottom: 15px;
+        }
+        
+        .uploaded-files-list {
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            padding: 10px;
+            background-color: #fafafa;
+            border-radius: 4px;
+        }
+        
+        .uploaded-file {
+            padding: 6px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .uploaded-file:last-child {
+            border-bottom: none;
+        }
+        
+        .clear-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .clear-btn:hover {
+            background-color: #d32f2f;
+        }
+        
+        .duplicate-summary {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: 4px;
+            font-size: 14px;
+            display: none;
+            color: #d32f2f;
+        }
+        
+        .remove-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 2px 6px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <h1>Multiple File Upload</h1>
+        <form id="upload-form" enctype="multipart/form-data">
+            <input type="file" id="file-input" class="file-input" name="files" multiple>
+            <button type="button" class="upload-btn" id="select-files-btn">Select Files</button>
+            <div id="selected-files"></div>
+            <div id="duplicate-summary" class="duplicate-summary"></div>
+            <button type="button" class="upload-btn" id="upload-btn" disabled>Upload Files</button>
+        </form>
+        <div id="status"></div>
+        
+        <div class="upload-stats">
+            <div class="upload-count" id="upload-count">Total Files Uploaded: 0</div>
+            <h3>Upload History</h3>
+            <div class="uploaded-files-list" id="uploaded-files-list">
+                <div class="no-files">No files uploaded yet</div>
+            </div>
+            <button type="button" class="clear-btn" id="clear-history">Clear History</button>
+        </div>
+    </div>
+
+    <script>
+        // API server URL - change this to your FastAPI server address
+        const API_URL = 'http://localhost:8000';
+        
+        // Initialize the upload counter and files list from localStorage
+        let uploadCounter = parseInt(localStorage.getItem('uploadCounter') || '0');
+        let uploadedFiles = JSON.parse(localStorage.getItem('uploadedFiles') || '[]');
+        
+        // Create a map of filenames for duplicate checking
+        let uploadedFilenamesMap = new Map();
+        uploadedFiles.forEach(file => {
+            uploadedFilenamesMap.set(file.name.toLowerCase(), true);
+        });
+        
+        // Track selected files and duplicates
+        let selectedFiles = [];
+        let hasDuplicates = false;
+        
+        // Update the UI with stored values
+        updateUploadStats();
+        
+        document.getElementById('select-files-btn').addEventListener('click', function() {
+            document.getElementById('file-input').click();
+        });
+
+        document.getElementById('file-input').addEventListener('change', function() {
+            const fileInput = this;
+            const files = fileInput.files;
+            const selectedFilesDiv = document.getElementById('selected-files');
+            const duplicateSummary = document.getElementById('duplicate-summary');
+            const uploadBtn = document.getElementById('upload-btn');
+            
+            selectedFilesDiv.innerHTML = '';
+            duplicateSummary.style.display = 'none';
+            duplicateSummary.textContent = '';
+            
+            selectedFiles = [];
+            hasDuplicates = false;
+            
+            if (files.length > 0) {
+                let duplicateCount = 0;
+                let validFiles = [];
+                
+                // First pass: identify duplicates
+                for (let i = 0; i < files.length; i++) {
+                    const fileName = files[i].name;
+                    const isDuplicate = uploadedFilenamesMap.has(fileName.toLowerCase());
+                    
+                    if (isDuplicate) {
+                        duplicateCount++;
+                    } else {
+                        validFiles.push({
+                            file: files[i],
+                            isDuplicate: false
+                        });
+                    }
+                }
+                
+                // Show duplicate summary if there are duplicates
+                if (duplicateCount > 0) {
+                    duplicateSummary.style.display = 'block';
+                    duplicateSummary.textContent = `${duplicateCount} file(s) were detected as duplicates and removed. Duplicates are not allowed.`;
+                    hasDuplicates = true;
+                }
+                
+                // Second pass: check for duplicates within current selection
+                const currentSelectionMap = new Map();
+                const duplicatesInSelection = [];
+                
+                validFiles.forEach((fileObj, index) => {
+                    const fileName = fileObj.file.name.toLowerCase();
+                    
+                    if (currentSelectionMap.has(fileName)) {
+                        // Mark as duplicate in current selection
+                        fileObj.isDuplicate = true;
+                        duplicatesInSelection.push(index);
+                        hasDuplicates = true;
+                    } else {
+                        currentSelectionMap.set(fileName, index);
+                    }
+                });
+                
+                // If there are duplicates within the selection, update the summary
+                if (duplicatesInSelection.length > 0) {
+                    duplicateSummary.style.display = 'block';
+                    const prevText = duplicateSummary.textContent;
+                    duplicateSummary.textContent = prevText ? 
+                        `${prevText} Additionally, ${duplicatesInSelection.length} duplicate file(s) were found within your selection.` :
+                        `${duplicatesInSelection.length} duplicate file(s) were found within your selection and removed.`;
+                }
+                
+                // Filter out duplicates within the selection
+                validFiles = validFiles.filter(fileObj => !fileObj.isDuplicate);
+                
+                // Store filtered files for upload
+                selectedFiles = validFiles.map(fileObj => fileObj.file);
+                
+                // Display valid files in the UI
+                if (selectedFiles.length > 0) {
+                    uploadBtn.disabled = false;
+                    
+                    selectedFiles.forEach(file => {
+                        const fileItem = document.createElement('div');
+                        fileItem.className = 'file-item';
+                        
+                        const fileNameSpan = document.createElement('span');
+                        fileNameSpan.textContent = file.name;
+                        fileItem.appendChild(fileNameSpan);
+                        
+                        // Add remove button
+                        const removeButton = document.createElement('button');
+                        removeButton.className = 'remove-btn';
+                        removeButton.textContent = 'Remove';
+                        removeButton.onclick = function() {
+                            // Remove this file from the selectedFiles array
+                            const index = selectedFiles.indexOf(file);
+                            if (index !== -1) {
+                                selectedFiles.splice(index, 1);
+                            }
+                            
+                            // Remove this item from the UI
+                            fileItem.remove();
+                            
+                            // Disable upload button if no files left
+                            if (selectedFiles.length === 0) {
+                                uploadBtn.disabled = true;
+                            }
+                        };
+                        fileItem.appendChild(removeButton);
+                        
+                        selectedFilesDiv.appendChild(fileItem);
+                    });
+                } else {
+                    uploadBtn.disabled = true;
+                    
+                    // If all files were duplicates, show a message
+                    if (files.length > 0 && selectedFiles.length === 0) {
+                        duplicateSummary.style.display = 'block';
+                        duplicateSummary.textContent = 'All selected files were duplicates. Please select different files.';
+                    }
+                }
+            } else {
+                uploadBtn.disabled = true;
+            }
+            
+            // Clear the file input to allow reselection of the same files if needed
+            fileInput.value = '';
+        });
+
+        document.getElementById('upload-btn').addEventListener('click', async function() {
+            if (selectedFiles.length === 0) return;
+            
+            const status = document.getElementById('status');
+            status.textContent = `Uploading ${selectedFiles.length} files...`;
+            
+            const formData = new FormData();
+            
+            // Append each file with the same field name
+            for (let i = 0; i < selectedFiles.length; i++) {
+                formData.append('files', selectedFiles[i]);
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/upload-multiple/`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result && result.filenames) {
+                    status.textContent = `Successfully uploaded ${result.filenames.length} files`;
+                    
+                    // Update the counter and file list
+                    uploadCounter += result.filenames.length;
+                    
+                    // Add each file to the history with timestamp
+                    const timestamp = new Date().toLocaleString();
+                    result.filenames.forEach(filename => {
+                        uploadedFiles.push({
+                            name: filename,
+                            timestamp: timestamp
+                        });
+                        // Add to map for duplicate detection
+                        uploadedFilenamesMap.set(filename.toLowerCase(), true);
+                    });
+                    
+                    // Save to localStorage
+                    localStorage.setItem('uploadCounter', uploadCounter.toString());
+                    localStorage.setItem('uploadedFiles', JSON.stringify(uploadedFiles));
+                    
+                    // Update the UI
+                    updateUploadStats();
+                    
+                } else if (result && result.detail) {
+                    // Handle FastAPI validation error format
+                    status.textContent = `Error: ${result.detail}`;
+                } else {
+                    // Log the actual response for debugging
+                    console.log("Server response:", result);
+                    status.textContent = `Successfully uploaded ${selectedFiles.length} files`;
+                }
+                
+                // Reset the file selection
+                selectedFiles = [];
+                document.getElementById('selected-files').innerHTML = '';
+                document.getElementById('duplicate-summary').style.display = 'none';
+                this.disabled = true;
+            } catch (error) {
+                console.error("Upload error:", error);
+                status.textContent = `Error uploading files: ${error.message}`;
+            }
+        });
+        
+        document.getElementById('clear-history').addEventListener('click', function() {
+            // Clear the history
+            uploadCounter = 0;
+            uploadedFiles = [];
+            uploadedFilenamesMap.clear();
+            
+            // Update localStorage
+            localStorage.setItem('uploadCounter', '0');
+            localStorage.setItem('uploadedFiles', '[]');
+            
+            // Update the UI
+            updateUploadStats();
+            
+            document.getElementById('status').textContent = 'Upload history cleared';
+        });
+        
+        function updateUploadStats() {
+            // Update the counter display
+            document.getElementById('upload-count').textContent = `Total Files Uploaded: ${uploadCounter}`;
+            
+            // Update the files list
+            const filesList = document.getElementById('uploaded-files-list');
+            
+            if (uploadedFiles.length === 0) {
+                filesList.innerHTML = '<div class="no-files">No files uploaded yet</div>';
+            } else {
+                filesList.innerHTML = '';
+                
+                // Display files in reverse chronological order (newest first)
+                for (let i = uploadedFiles.length - 1; i >= 0; i--) {
+                    const file = uploadedFiles[i];
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'uploaded-file';
+                    fileItem.textContent = `${file.name} (${file.timestamp})`;
+                    filesList.appendChild(fileItem);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
