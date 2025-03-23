@@ -1,0 +1,31 @@
+
+/* graph */
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f6fa;
+  }
+  
+.Main-view{
+    background-color: white;
+    display: flex;
+    height: auto;
+    overflow-y: auto;
+    justify-content: center;
+    align-items: center;
+    padding: 5rem;
+  }
+  .Main-view .Graph{
+    background-color: grey;
+  }
+  .Main-view .desc{
+    background-color: red;
+    margin-top: 5rem;
+    
+  }

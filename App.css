@@ -1,0 +1,338 @@
+/* Global Styles */
+/* A simple CSS reset */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+body {
+    line-height: 1;
+}
+ol, ul {
+    list-style: none;
+}
+blockquote, q {
+    quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  font-size: 16px; /* Set an explicit base font size */
+  background-color: #f5f6fa;
+}
+
+.sidebar {
+  padding: 1rem;
+  font-size: 16px; /* Ensure font sizes match */
+}
+
+.top-bar {
+  padding: 1rem 2rem;
+}
+
+/* Overall App Layout */
+.app-container {
+  display: flex;
+  /* This container does not enforce a full viewport height because static pages reload completely */
+}
+
+/* Sidebar Styling */
+.sidebar {
+  width: 16rem;
+  overflow-y: auto;
+  background-color: #111827;
+  height: 100vh !important;
+  color: #fff;
+  padding: 1rem;
+}
+
+.sidebar .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+}
+
+.sidebar .Home-link {
+  color: white !important;
+  text-decoration: none !important;
+}
+
+.nav ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.nav li {
+  margin-bottom: 1rem !important;
+  cursor: pointer !important;
+  padding: 0.2rem !important;
+  border-radius: 4px !important;
+  transition: background-color 0.3s ease !important;
+}
+
+.link {
+  color: white;
+  text-decoration: none;
+}
+.link:hover {
+  color: gray;
+}
+.nav li:hover {
+  background-color: #1f2937 !important;
+}
+
+/* Dashboard Styling */
+.dashboard {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 1rem 2rem;
+}
+
+/* Top Bar */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.top-bar h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+}
+
+.top-bar .actions button {
+  padding: 0.5rem 1rem;
+  background-color: #2563eb;
+  border: none;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 0.5rem;
+}
+.top-bar .actions button:hover {
+  background-color: #1d4ed8;
+}
+
+/* Stats Cards */
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.stats-card {
+  background-color: #ffffff;
+  border-radius: 6px;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.stats-card .value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+.stats-card .label {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Lower Cards Grid */
+.lower-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  flex-grow: 1;
+}
+.card {
+  background-color: #ffffff;
+  border-radius: 6px;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+  margin-bottom: 1rem;
+  height: 20rem !important;
+}
+.card h3 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Badge Styling */
+.badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: #fff;
+}
+.badge-success {
+  background-color: #10b981;
+}
+.badge-danger {
+  background-color: #ef4444;
+}
+
+/* Graph Section */
+.graph {
+  height: 70vh;
+  background-color: #e5e7eb;
+  margin: 1rem 2rem;
+  border-radius: 4px;
+}
+
+/* Description Area */
+.desc {
+  margin: 1rem 2rem;
+  padding: 1rem;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.desc .card {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Profile Icon Container */
+.profile-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Profile Icon */
+.profile-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #2563eb;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Profile Dropdown */
+.profile-dropdown {
+  position: absolute;
+  right: 0;
+  top: 45px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  width: 150px;
+  text-align: center;
+  z-index: 10;
+}
+.profile-dropdown p {
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+}
+.profile-dropdown button {
+  padding: 5px 10px;
+  background-color: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.profile-dropdown button:hover {
+  background-color: #dc2626;
+}
+
+.link-hello{
+  padding: 0.3rem;
+}
+.nav{
+  padding-top: 0.2rem;
+}
+.logo-hello{
+  padding: 0.5rem;
+}
+
+/* Dropdown header styling */
+.dropdown-header {
+  padding: 0.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #1f2937;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  margin-left: 2rem;
+}
+
+/* Dropdown links container */
+.dropdown-links {
+  margin-top: 1rem;
+  list-style: none;
+  padding-left: 1rem; /* Indent the dropdown links */
+  margin-bottom: 1rem;
+}
+
+/* Dropdown links styling */
+.dropdown-links li {
+  margin-bottom: 0.5rem;
+}
+
+.dropdown-links li a {
+  color: white;
+  text-decoration: none;
+}
+
+.dropdown-links li a:hover {
+  color: gray;
+}
