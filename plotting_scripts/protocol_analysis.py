@@ -11,8 +11,11 @@ import numpy as np
 import copy
 
 # Define your pcapng file name
-pcap_file = "28-1-25-bro-laptp-60ms.pcapng"
+if len(sys.argv) < 2:
+    print("Usage: python generate.py <pcapng_file>")
+    sys.exit(1)
 
+pcap_file = sys.argv[1]
 # Read all packets using Scapy
 print(f"Reading packets from {pcap_file}...")
 packets = rdpcap(pcap_file)
