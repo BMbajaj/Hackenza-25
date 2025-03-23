@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upload PCAPNG File</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    input[type="file"] {
+      margin: 20px 0;
+    }
+    button {
+      background-color: #4285f4;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #3367d6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Upload PCAPNG File</h1>
+    <input type="file" id="pcapInput" accept=".pcapng" />
+    <br />
+    <button id="uploadBtn">Upload File</button>
+    <div id="status"></div>
+  </div>
+  
+  <script>
+    const uploadBtn = document.getElementById("uploadBtn");
+    const pcapInput = document.getElementById("pcapInput");
+    const statusDiv = document.getElementById("status");
+    
+    uploadBtn.addEventListener("click", async () => {
+      if (!pcapInput.files || pcapInput.files.length === 0) {
+        alert("Please select a pcapng file.");
+        return;
+      }
+      
+      const file = pcapInput.files[0];
+      const formData = new FormData();
+      formData.append("file", file);
+      
+      statusDiv.textContent = "Uploading file...";
+      
+      try {
+        const response = await fetch("http://localhost:5000/upload-file", {
+          method: "POST",
+          body: formData
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.message || "Upload failed");
+        }
+        statusDiv.textContent = result.message;
+      } catch (error) {
+        statusDiv.textContent = "Error: " + error.message;
+      }
+    });
+  </script>
+</body>
+</html>

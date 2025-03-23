@@ -3,6 +3,12 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import mongoose from 'mongoose';
 import fs from 'fs';
+import { spawn } from 'child_process'; // Import child_process
+
+import multer from 'multer';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 const PORT = 5000; // Use port 5000 for everything
@@ -10,6 +16,22 @@ const PORT = 5000; // Use port 5000 for everything
 // Convert ES module __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Ensure the uploads directory exists
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Configure Multer storage for single file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => {
+    // Use timestamp and original name to create a unique filename
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+const upload = multer({ storage });
 
 // Serve static files from the build folder and current directory
 app.use(express.static(path.join(__dirname, 'dist')));
@@ -38,6 +60,41 @@ const UserSchema = new mongoose.Schema({
 });
 const User = mongoose.model("User", UserSchema);
 
+// -----------------
+// Login Endpoint
+// -----------------
+app.post('/login', async (req, res) => {
+  try {
+    let { email, password } = req.body;
+    if (!email || !password) {
+      return res.json({ message: "Please provide email and password." });
+    }
+    email = email.trim().toLowerCase();
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.json({ message: "User does not exist. Please sign up." });
+    }
+    if (user.password !== password) {
+      return res.json({ message: "Invalid email or password." });
+    }
+    
+    // Write the current user's email to currentUser.txt before sending response
+    try {
+      fs.writeFileSync(path.join(__dirname, 'currentUser.txt'), user.email);
+      console.log("currentUser.txt updated with email:", user.email);
+    } catch (err) {
+      console.error("Error writing currentUser.txt:", err);
+    }
+    
+    // Create a plain object with only the fields you need
+    const userData = { name: user.name, email: user.email };
+    res.json({ message: `Welcome back, ${user.name}!`, user: userData });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ message: "Error during login." });
+  }
+});
+
 // Serve the login page
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'login.html'));
@@ -64,39 +121,42 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-// Login endpoint
-app.post('/login', async (req, res) => {
-  try {
-    let { email, password } = req.body;
-    if (!email || !password) {
-      return res.json({ message: "Please provide email and password." });
-    }
-    email = email.trim().toLowerCase();
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.json({ message: "User does not exist. Please sign up." });
-    }
-    if (user.password !== password) {
-      return res.json({ message: "Invalid email or password." });
-    }
-    
-    // Write the current user's email to currentUser.txt
-    try {
-      fs.writeFileSync(path.join(__dirname, 'currentUser.txt'), user.email);
-      console.log("currentUser.txt updated with email:", user.email);
-    } catch (err) {
-      console.error("Error writing currentUser.txt:", err);
-    }
-    
-    // Create a plain object with only the fields you need
-    const userData = { name: user.name, email: user.email };
-    res.json({ message: `Welcome back, ${user.name}!`, user: userData });
-  } catch (error) {
-    console.error("Login error:", error);
-    res.status(500).json({ message: "Error during login." });
+// File Upload Endpoints remain unchanged
+app.post('/upload-multiple', upload.array('files'), (req, res) => {
+  console.log("Received upload request");
+  if (!req.files || req.files.length === 0) {
+      console.log("No files received");
+      return res.status(400).json({ error: 'No files uploaded' });
   }
+  console.log("Files uploaded:", req.files);
+  res.json({ message: 'Files uploaded successfully', files: req.files });
 });
 
+// New: File Upload Endpoint for a single pcapng file
+app.post('/upload-file', upload.single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded." });
+  }
+  
+  const filePath = req.file.path;
+  console.log("File stored at:", filePath);
+  
+  // Spawn the Python script and pass the file path as argument
+  const pythonProcess = spawn('python', ['generate.py', filePath]);
+  
+  let scriptOutput = "";
+  pythonProcess.stdout.on('data', (data) => {
+    scriptOutput += data.toString();
+  });
+  pythonProcess.stderr.on('data', (data) => {
+    console.error(`Python stderr: ${data}`);
+  });
+  
+  pythonProcess.on('close', (code) => {
+    console.log(`Python process exited with code ${code}`);
+    res.json({ message: "File uploaded and processed.", output: scriptOutput });
+  });
+});
 
 // PROFILE IMAGE ROUTE: Must be above the catch-all route
 app.get('/profileImage', async (req, res) => {
