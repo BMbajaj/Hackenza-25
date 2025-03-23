@@ -25,9 +25,19 @@ const Dashboard: React.FC = () => {
     window.location.href = "index.html";
   };
 
-  // Build URL for profile image from backend
+  const handleUpload = () => {
+    if (!storedName || !storedEmail) {
+      alert("Please log in to upload files.");
+    } else {
+      window.open("upload.html", "_blank");
+    }
+  };
+
+  // Build URL for profile image if needed (not used in plot display below)
   const profileImageUrl = storedEmail
-    ? `http://localhost:5000/profileImage?email=${storedEmail}`
+    ? `http://localhost:5000/profileImage?email=${encodeURIComponent(
+        storedEmail
+      )}`
     : "";
 
   return (
@@ -51,7 +61,7 @@ const Dashboard: React.FC = () => {
           ) : (
             <button onClick={handleLogin}>Login</button>
           )}
-          <button>Upload</button>
+          <button onClick={handleUpload}>Upload</button>
         </div>
       </div>
 
@@ -74,6 +84,8 @@ const Dashboard: React.FC = () => {
           <div className="label">Network Efficiency</div>
         </div>
       </div>
+
+      {/* Plot Area */}
     </div>
   );
 };
