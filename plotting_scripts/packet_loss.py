@@ -10,6 +10,7 @@ from bokeh.models import (
 )
 from bokeh.transform import cumsum
 from bokeh.palettes import Category10
+import sys
 
 # ------------------------------------------------------------------------
 # 1. Packet Loss Analysis
@@ -195,10 +196,13 @@ def create_layout(total_loss: dict, ip_loss: dict, total_packets: int):
 # ------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    pcapng_file = "20_11_24_bro_laptop_60ms_2min.pcapng"  # Replace with your pcapng file path
+    if len(sys.argv) < 2:
+        print("Usage: python generate.py <pcapng_file>")
+        sys.exit(1)
 
+    pcapng_file = sys.argv[1]
     total_loss, ip_loss, total_packets = analyze_pcapng(pcapng_file)
     final_layout = create_layout(total_loss, ip_loss, total_packets)
 
-    output_file("plot8.html")
+    output_file("packet_loss_analysis_with_loss_percentage.html")
     show(final_layout)
