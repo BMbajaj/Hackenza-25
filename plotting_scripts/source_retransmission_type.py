@@ -7,6 +7,7 @@ from bokeh.models import (
     ColumnDataSource, DataTable, TableColumn, HoverTool
 )
 from collections import defaultdict
+import sys
 
 def analyze_pcapng(file_path):
     """
@@ -81,7 +82,7 @@ def create_bokeh_visualization(ip_delays, all_ip_delays):
       - A single hover tooltip that displays the full breakdown.
     """
     # Name of the output file
-    output_file("plot9.html")
+    output_file("20_11_24_bro_laptop_60ms_2min.html")
     
     types = ["spurious", "fast", "timeout"]
     ips = list(ip_delays.keys())
@@ -161,8 +162,15 @@ def create_bokeh_visualization(ip_delays, all_ip_delays):
     
     show(column(p, data_table))
 
-if __name__ == "__main__":
-    pcapng_file = "20_11_24_bro_laptop_60ms_2min.pcapng"  # Update this path
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python generate.py <pcapng_file>")
+        sys.exit(1)
+
+    pcapng_file = sys.argv[1]
     all_ip_delays = analyze_pcapng(pcapng_file)
     significant_delays = filter_significant_delays(all_ip_delays)
     create_bokeh_visualization(significant_delays, all_ip_delays)
+
+if __name__ == "__main__":
+    main()
