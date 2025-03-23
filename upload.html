@@ -219,7 +219,7 @@
 <body>
   <div class="container">
     <h1>Upload PCAPNG File</h1>
-    
+   
     <div class="file-upload-container">
       <label class="file-upload-label">
         <div class="file-upload-icon">📁</div>
@@ -228,16 +228,16 @@
       </label>
       <div id="fileName" class="file-name"></div>
     </div>
-    
+   
     <button id="uploadBtn" disabled>Upload File</button>
-    
+   
     <div class="progress-bar" id="progressBar">
       <div class="progress-bar-fill" id="progressBarFill"></div>
     </div>
-    
+   
     <div id="status"></div>
   </div>
-  
+ 
   <script>
     const uploadBtn = document.getElementById("uploadBtn");
     const pcapInput = document.getElementById("pcapInput");
@@ -246,13 +246,14 @@
     const container = document.querySelector(".container");
     const progressBar = document.getElementById("progressBar");
     const progressBarFill = document.getElementById("progressBarFill");
-    
+    const dropArea = document.querySelector('.file-upload-label');
+   
     pcapInput.addEventListener("change", () => {
       if (pcapInput.files && pcapInput.files.length > 0) {
         const file = pcapInput.files[0];
         fileNameDiv.textContent = file.name;
         uploadBtn.disabled = false;
-        
+       
         // Add a subtle animation to the container
         container.classList.add("pulse");
         setTimeout(() => {
@@ -263,28 +264,28 @@
         uploadBtn.disabled = true;
       }
     });
-    
+   
     uploadBtn.addEventListener("click", async () => {
       if (!pcapInput.files || pcapInput.files.length === 0) {
         statusDiv.textContent = "Please select a pcapng file.";
         statusDiv.className = "status-error";
         return;
       }
-      
+     
       const file = pcapInput.files[0];
       const formData = new FormData();
       formData.append("file", file);
-      
+     
       statusDiv.textContent = "Uploading file...";
       statusDiv.className = "status-uploading";
-      
+     
       // Disable button during upload
       uploadBtn.disabled = true;
       uploadBtn.textContent = "Uploading...";
-      
+     
       // Show and animate progress bar
       progressBar.style.display = "block";
-      
+     
       // Simulate progress for visual feedback
       let progress = 0;
       const progressInterval = setInterval(() => {
@@ -295,26 +296,26 @@
         }
         progressBarFill.style.width = progress + "%";
       }, 300);
-      
+     
       try {
         const response = await fetch("http://localhost:5000/upload-file", {
           method: "POST",
           body: formData
         });
-        
+       
         clearInterval(progressInterval);
         progressBarFill.style.width = "100%";
-        
+       
         const result = await response.json();
         if (!response.ok) {
           throw new Error(result.message || "Upload failed");
         }
-        
+       
         setTimeout(() => {
           statusDiv.textContent = result.message || "File uploaded successfully!";
           statusDiv.className = "status-success";
           uploadBtn.textContent = "Upload Complete";
-          
+         
           // Reset after 3 seconds
           setTimeout(() => {
             uploadBtn.textContent = "Upload File";
@@ -323,7 +324,7 @@
             progressBarFill.style.width = "0%";
           }, 3000);
         }, 500);
-        
+       
       } catch (error) {
         clearInterval(progressInterval);
         statusDiv.textContent = "Error: " + error.message;
@@ -332,47 +333,54 @@
         uploadBtn.disabled = false;
       }
     });
-    
+   
     // Add drag and drop functionality
-    const dropArea = document.querySelector('.file-upload-label');
-    
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
       dropArea.addEventListener(eventName, preventDefaults, false);
     });
-    
+   
     function preventDefaults(e) {
       e.preventDefault();
       e.stopPropagation();
     }
-    
+   
     ['dragenter', 'dragover'].forEach(eventName => {
       dropArea.addEventListener(eventName, highlight, false);
     });
-    
+   
     ['dragleave', 'drop'].forEach(eventName => {
       dropArea.addEventListener(eventName, unhighlight, false);
     });
-    
+   
     function highlight() {
-      dropArea.style.borderColor = var(--primary-hover);
+      dropArea.style.borderColor = '#8075e5';
       dropArea.style.backgroundColor = '#30303a';
     }
-    
+   
     function unhighlight() {
-      dropArea.style.borderColor = '';
+      dropArea.style.borderColor = '#6c5ce7';
       dropArea.style.backgroundColor = '';
     }
-    
+   
     dropArea.addEventListener('drop', handleDrop, false);
-    
+   
     function handleDrop(e) {
       const dt = e.dataTransfer;
       const files = dt.files;
-      pcapInput.files = files;
-      
-      // Trigger the change event manually
-      const event = new Event('change');
-      pcapInput.dispatchEvent(event);
+     
+      // Create a new FileList-like object that we can assign
+      const fileInput = pcapInput;
+      const dataTransfer = new DataTransfer();
+     
+      // Add the dropped file to our new FileList
+      if (files.length > 0) {
+        dataTransfer.items.add(files[0]);
+        fileInput.files = dataTransfer.files;
+       
+        // Trigger change event
+        const event = new Event('change');
+        fileInput.dispatchEvent(event);
+      }
     }
   </script>
 </body>

@@ -1,5 +1,6 @@
 import pyshark
 import pandas as pd
+import sys
 from bokeh.plotting import figure, show
 from bokeh.io import output_file
 from bokeh.layouts import column
@@ -7,7 +8,11 @@ from bokeh.models import (
     ColumnDataSource, DataTable, TableColumn, HoverTool
 )
 from collections import defaultdict
+from bokeh.themes import built_in_themes
+from bokeh.io import curdoc
 
+# Apply dark mode theme - add this before creating any figures
+curdoc().theme = built_in_themes["dark_minimal"]
 def analyze_pcapng(file_path):
     """
     Analyzes the pcapng file to extract the total retransmission delay per source IP,
@@ -162,7 +167,7 @@ def create_bokeh_visualization(ip_delays, all_ip_delays):
     show(column(p, data_table))
 
 if __name__ == "__main__":
-    pcapng_file = "20_11_24_bro_laptop_60ms_2min.pcapng"  # Update this path
+    pcapng_file = sys.argv[1]  # Update this path
     all_ip_delays = analyze_pcapng(pcapng_file)
     significant_delays = filter_significant_delays(all_ip_delays)
     create_bokeh_visualization(significant_delays, all_ip_delays)

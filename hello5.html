@@ -7,20 +7,55 @@
     <link rel="stylesheet" href="./App.css" />
   </head>
   <body>
-    <div class="app-container">
+    <div class="app-container  hello-pages">
       <!-- Sidebar -->
       <div class="sidebar">
         <div class="logo">
-          <a href="index.html" class="Home-link">NetLogAnalyzer</a>
+          <a href="index.html" class="Home-link">NetDelayAnalyzer</a>
         </div>
         <nav class="nav">
           <ul>
-            <li><a href="hello1.html" class="link">Dashboard 1</a></li>
-            <li><a href="hello2.html" class="link">Dashboard 2</a></li>
-            <li><a href="hello3.html" class="link">Dashboard 3</a></li>
+            <li>
+              <details>
+                <summary>RTT ACK Analysis</summary>
+                <ul class="dropdown-links">
+                  <li><a href="hello1.html" class="link">Conversation Analysis</a></li>
+                  <li><a href="hello2.html" class="link">Source IP Analysis</a></li>
+                  <li><a href="hello3.html" class="link">Network Traffic Overview</a></li>
+                </ul>
+              </details>
+            </li>
+            <li>
+              <details>
+                <summary>Protocol Analysis</summary>
+                <ul class="dropdown-links">
+                  <li><a href="hello4.html" class="link">Delta Time per Protocol</a></li>
+                  <li><a href="hello5.html" class="link">Sum of delta times per protocol</a></li>
+                  <li><a href="hello6.html" class="link">Graph of Sum of delta times per protocol</a></li>
+                  <li><a href="hello7.html" class="link">Top 5 Conversations per protocol</a></li>
+                </ul>
+              </details>
+            </li>
+            <li>
+              <details>
+                <summary>Packet Loss</summary>
+                <ul class="dropdown-links">
+                  <li><a href="hello8.html" class="link">Total Lost Packets by Category</a></li>
+                </ul>
+              </details>
+            </li>
+            <li>
+              <details>
+                <summary>Source Retransmission</summary>
+                <ul class="dropdown-links">
+                  <li><a href="hello9.html" class="link">Retransmission Delays by IP</a></li>
+                </ul>
+              </details>
+            </li>
           </ul>
         </nav>
       </div>
+      
       
       <!-- Dashboard / Main View Area -->
       <div class="dashboard">

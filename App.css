@@ -488,3 +488,7 @@ body {
   background-color: var(--input-bg);
   transform: translateX(5px);
 }
+
+.hello-pages{
+  background-color: white !important;
+}

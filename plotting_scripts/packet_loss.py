@@ -1,6 +1,7 @@
 import pyshark
 from collections import defaultdict
 import math
+import sys
 
 from bokeh.plotting import figure, show
 from bokeh.io import output_file
@@ -10,7 +11,11 @@ from bokeh.models import (
 )
 from bokeh.transform import cumsum
 from bokeh.palettes import Category10
+from bokeh.themes import built_in_themes
+from bokeh.io import curdoc
 
+# Apply dark mode theme - add this before creating any figures
+curdoc().theme = built_in_themes["dark_minimal"]
 # ------------------------------------------------------------------------
 # 1. Packet Loss Analysis
 # ------------------------------------------------------------------------
@@ -195,7 +200,7 @@ def create_layout(total_loss: dict, ip_loss: dict, total_packets: int):
 # ------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    pcapng_file = "20_11_24_bro_laptop_60ms_2min.pcapng"  # Replace with your pcapng file path
+    pcapng_file = sys.argv[1]  # Replace with your pcapng file path
 
     total_loss, ip_loss, total_packets = analyze_pcapng(pcapng_file)
     final_layout = create_layout(total_loss, ip_loss, total_packets)

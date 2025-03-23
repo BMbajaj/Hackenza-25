@@ -53,10 +53,16 @@ const UserSchema = new mongoose.Schema({
   name: String,
   email: String,
   password: String,
-  profileImage: Buffer, // Field to store the image
-  plotContent1: String,  // Field to store HTML content from plot1.html
-  plotContent2: String,  // Field to store HTML content from plot2.html
-  plotContent3: String,  // Field to store HTML content from plot3.html
+  profileImage: Buffer,
+  plotContent1: String,
+  plotContent2: String,
+  plotContent3: String,
+  plotContent4: String,
+  plotContent5: String,
+  plotContent6: String,
+  plotContent7: String,
+  plotContent8: String,
+  plotContent9: String,
 });
 const User = mongoose.model("User", UserSchema);
 
@@ -141,22 +147,65 @@ app.post('/upload-file', upload.single('file'), (req, res) => {
   const filePath = req.file.path;
   console.log("File stored at:", filePath);
   
-  // Spawn the Python script and pass the file path as argument
-  const pythonProcess = spawn('python', ['generate.py', filePath]);
+  // Folder containing the plotting scripts
+  const scriptsDir = path.join(__dirname, 'plotting_scripts');
   
-  let scriptOutput = "";
-  pythonProcess.stdout.on('data', (data) => {
-    scriptOutput += data.toString();
-  });
-  pythonProcess.stderr.on('data', (data) => {
-    console.error(`Python stderr: ${data}`);
+  let scriptFiles;
+  try {
+    scriptFiles = fs.readdirSync(scriptsDir).filter(file => file.endsWith('.py'));
+  } catch (err) {
+    console.error("Error reading plotting_scripts directory:", err);
+    return res.status(500).json({ message: "Error reading plotting scripts directory." });
+  }
+  
+  if (scriptFiles.length === 0) {
+    return res.status(404).json({ message: "No plotting scripts found." });
+  }
+  
+  // Create a promise for each script execution
+  const scriptPromises = scriptFiles.map(script => {
+    return new Promise((resolve, reject) => {
+      const scriptPath = path.join(scriptsDir, script);
+      const proc = spawn('python', [scriptPath, filePath]);
+      
+      let output = "";
+      let errorOutput = "";
+      
+      proc.stdout.on('data', (data) => {
+        output += data.toString();
+      });
+      
+      proc.stderr.on('data', (data) => {
+        errorOutput += data.toString();
+      });
+      
+      proc.on('close', (code) => {
+        if (code === 0) {
+          console.log(`${script} completed successfully.`);
+          resolve({ script, output });
+        } else {
+          console.error(`${script} exited with code ${code}. Error: ${errorOutput}`);
+          reject({ script, code, error: errorOutput });
+        }
+      });
+    });
   });
   
-  pythonProcess.on('close', (code) => {
-    console.log(`Python process exited with code ${code}`);
-    res.json({ message: "File uploaded and processed.", output: scriptOutput });
-  });
+  // Wait for all scripts to settle
+  Promise.allSettled(scriptPromises)
+    .then(results => {
+      const successes = results.filter(r => r.status === 'fulfilled').map(r => r.value);
+      const failures = results.filter(r => r.status === 'rejected').map(r => r.reason);
+      
+      console.log("Scripts execution results:", { successes, failures });
+      res.json({ message: "File uploaded and scripts executed.", successes, failures });
+    })
+    .catch(err => {
+      console.error("Error running scripts:", err);
+      res.status(500).json({ message: "Error executing plotting scripts." });
+    });
 });
+
 
 // PROFILE IMAGE ROUTE: Must be above the catch-all route
 app.get('/profileImage', async (req, res) => {
@@ -229,6 +278,109 @@ app.get('/userPlot3', async (req, res) => {
     return res.status(500).send("Server error");
   }
 });
+
+app.get('/userPlot4', async (req, res) => {
+  const email = req.query.email;
+  if (!email) return res.status(400).send("Email query parameter is required.");
+  try {
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    if (user && user.plotContent4) {
+      res.set('Content-Type', 'text/html');
+      return res.send(user.plotContent4);
+    } else {
+      return res.status(404).send("Plot 4 not found");
+    }
+  } catch (error) {
+    console.error("Error fetching plot 4:", error);
+    return res.status(500).send("Server error");
+  }
+});
+
+app.get('/userPlot5', async (req, res) => {
+  const email = req.query.email;
+  if (!email) return res.status(400).send("Email query parameter is required.");
+  try {
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    if (user && user.plotContent5) {
+      res.set('Content-Type', 'text/html');
+      return res.send(user.plotContent5);
+    } else {
+      return res.status(404).send("Plot 5 not found");
+    }
+  } catch (error) {
+    console.error("Error fetching plot 5:", error);
+    return res.status(500).send("Server error");
+  }
+});
+
+app.get('/userPlot6', async (req, res) => {
+  const email = req.query.email;
+  if (!email) return res.status(400).send("Email query parameter is required.");
+  try {
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    if (user && user.plotContent6) {
+      res.set('Content-Type', 'text/html');
+      return res.send(user.plotContent6);
+    } else {
+      return res.status(404).send("Plot 6 not found");
+    }
+  } catch (error) {
+    console.error("Error fetching plot 6:", error);
+    return res.status(500).send("Server error");
+  }
+});
+
+app.get('/userPlot7', async (req, res) => {
+  const email = req.query.email;
+  if (!email) return res.status(400).send("Email query parameter is required.");
+  try {
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    if (user && user.plotContent7) {
+      res.set('Content-Type', 'text/html');
+      return res.send(user.plotContent7);
+    } else {
+      return res.status(404).send("Plot 7 not found");
+    }
+  } catch (error) {
+    console.error("Error fetching plot 7:", error);
+    return res.status(500).send("Server error");
+  }
+});
+
+app.get('/userPlot8', async (req, res) => {
+  const email = req.query.email;
+  if (!email) return res.status(400).send("Email query parameter is required.");
+  try {
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    if (user && user.plotContent8) {
+      res.set('Content-Type', 'text/html');
+      return res.send(user.plotContent8);
+    } else {
+      return res.status(404).send("Plot 8 not found");
+    }
+  } catch (error) {
+    console.error("Error fetching plot 8:", error);
+    return res.status(500).send("Server error");
+  }
+});
+
+app.get('/userPlot9', async (req, res) => {
+  const email = req.query.email;
+  if (!email) return res.status(400).send("Email query parameter is required.");
+  try {
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    if (user && user.plotContent9) {
+      res.set('Content-Type', 'text/html');
+      return res.send(user.plotContent9);
+    } else {
+      return res.status(404).send("Plot 9 not found");
+    }
+  } catch (error) {
+    console.error("Error fetching plot 9:", error);
+    return res.status(500).send("Server error");
+  }
+});
+
 
 // Catch-all for SPA routes: serve index.html from the build folder
 app.get('*', (req, res) => {

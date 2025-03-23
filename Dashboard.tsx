@@ -68,19 +68,19 @@ const Dashboard: React.FC = () => {
       {/* Stats Cards */}
       <div className="stats-cards">
         <div className="stats-card">
-          <div className="value">245ms</div>
+          <div className="value">-</div>
           <div className="label">Average Delay</div>
         </div>
         <div className="stats-card">
-          <div className="value">1.2s</div>
+          <div className="value">-</div>
           <div className="label">Maximum Delay</div>
         </div>
         <div className="stats-card">
-          <div className="value">42ms</div>
+          <div className="value">-</div>
           <div className="label">Minimum Delay</div>
         </div>
         <div className="stats-card">
-          <div className="value">89%</div>
+          <div className="value">-</div>
           <div className="label">Network Efficiency</div>
         </div>
       </div>

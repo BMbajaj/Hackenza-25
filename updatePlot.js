@@ -21,7 +21,7 @@ try {
 }
 
 if (!currentUserEmail) {
-  console.log("No logged-in user found. Exiting updatePlot script.");
+  console.log("No logged-in user found. Exiting update script.");
   process.exit(0);
 }
 
@@ -30,59 +30,66 @@ mongoose.connect(process.env.mongodb_urri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => {
-    console.error('MongoDB Connection Error:', err);
-    process.exit(1);
-  });
+.then(() => console.log("MongoDB connected"))
+.catch(err => {
+  console.error("MongoDB Connection Error:", err);
+  process.exit(1);
+});
 
-// Define the User schema with fields for plot content
+// Define the User schema with nine plotContent fields
 const userSchema = new mongoose.Schema({
   name: String,
   email: String,
   password: String,
-  profileImage: Buffer, // Field to store the image
-  plotContent1: String, // Field for plot1.html content
-  plotContent2: String, // Field for plot2.html content
-  plotContent3: String, // Field for plot3.html content
+  profileImage: Buffer,
+  plotContent1: String,
+  plotContent2: String,
+  plotContent3: String,
+  plotContent4: String,
+  plotContent5: String,
+  plotContent6: String,
+  plotContent7: String,
+  plotContent8: String,
+  plotContent9: String,
 });
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 
-async function updateAllPlots() {
+async function updatePlots() {
   try {
-    // List of plot files
-    const plotFiles = ['plot1.html', 'plot2.html', 'plot3.html'];
-    const plotContents = {};
-    
-    // Loop through each file and read its content if it exists
-    for (const fileName of plotFiles) {
+    // Loop through plot files 1 through 9
+    const updates = {};
+    for (let i = 1; i <= 9; i++) {
+      const fileName = `plot${i}.html`;
       const filePath = path.join(__dirname, fileName);
       if (fs.existsSync(filePath)) {
         const content = fs.readFileSync(filePath, 'utf-8');
-        // Map file name to the corresponding field name: plot1.html -> plotContent1, etc.
-        const fieldName = 'plotContent' + fileName.charAt(4);
-        plotContents[fieldName] = content;
+        updates[`plotContent${i}`] = content;
       } else {
-        console.log(`File ${fileName} not found. Skipping update for this file.`);
+        console.log(`${fileName} not found. Skipping update for this file.`);
       }
     }
-
-    // Update the user document with the plot contents
-    const result = await User.updateOne(
-      { email: currentUserEmail.trim().toLowerCase() },
-      { $set: plotContents }
-    );
-    console.log('Update result:', result);
     
-    // Optionally, delete the local plot files after updating
-    for (const fileName of plotFiles) {
+    if (Object.keys(updates).length === 0) {
+      console.log("No plot files found. Exiting.");
+      process.exit(0);
+    }
+    
+    // Update the current user's document in MongoDB with the new plot content
+    const result = await User.updateOne(
+      { email: currentUserEmail.toLowerCase().trim() },
+      { $set: updates }
+    );
+    console.log("Update result:", result);
+    
+    // Delete each plot file after successful update
+    for (let i = 1; i <= 9; i++) {
+      const fileName = `plot${i}.html`;
       const filePath = path.join(__dirname, fileName);
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
-        console.log(`Deleted ${fileName}`);
+        console.log(`${fileName} deleted successfully.`);
       }
     }
-    
   } catch (error) {
     console.error("Error updating plot content:", error);
   } finally {
@@ -90,4 +97,4 @@ async function updateAllPlots() {
   }
 }
 
-updateAllPlots();
+updatePlots();

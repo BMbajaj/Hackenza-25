@@ -1,12 +1,17 @@
 import pyshark
 import numpy as np
+import sys
 from bokeh.plotting import figure, output_file, show
 from bokeh.models import (ColumnDataSource, DataTable, TableColumn, CustomJS,
                           Select, Div, HoverTool, LinearColorMapper)
 from bokeh.layouts import column, row, Spacer
 from bokeh.palettes import Viridis256, Category10
 from bokeh.models import FactorRange
+from bokeh.themes import built_in_themes
+from bokeh.io import curdoc
 
+# Apply dark mode theme - add this before creating any figures
+curdoc().theme = built_in_themes["dark_minimal"]
 # ---------------------------
 # Enhanced styling constants
 # ---------------------------
@@ -128,7 +133,11 @@ def style_figure(p, title):
 # ---------------------------
 # Data Extraction: Extract ACK_RTT values and IP packet times.
 # ---------------------------
-pcap_file = "28-1-25-bro-rpi-60ms.pcapng"
+if len(sys.argv) < 2:
+    print("Usage: python generate.py <pcapng_file>")
+    sys.exit(1)
+
+pcap_file=sys.argv[1]
 
 ack_rtt_list = []
 ip_times = []
@@ -586,11 +595,11 @@ table_all_corr = DataTable(
 # Generate outputs
 ack_conv_groups = group_by_conversation(ack_rtt_list)
 conversation_layout = build_conversation_layout(ack_conv_groups, conv_delays)
-output_file("conversation_ack_rtt.html")
+output_file("plot1.html")
 show(conversation_layout)
 
 source_layout = build_source_layout(ack_rtt_list, delays_by_source)
-output_file("source_ack_rtt.html")
+output_file("plot2.html")
 show(source_layout)
 
 title = Div(text="<h2 style='color:#4a86e8;margin-bottom:5px'>Network Traffic Overview</h2>")
@@ -603,6 +612,6 @@ summary_layout = column(
     # Changed from row followed by row to a single row with all elements
     row(p_all_corr, Spacer(width=SPACER_WIDTH), table_all_corr)
 )
-output_file("all_ips_outliers.html")
+output_file("plot3.html")
 show(summary_layout)
 
