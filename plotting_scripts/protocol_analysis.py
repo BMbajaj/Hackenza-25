@@ -17,7 +17,10 @@ from bokeh.io import curdoc
 curdoc().theme = built_in_themes["dark_minimal"]
 # Define your pcapng file name
 pcap_file = sys.argv[1]
-
+if len(sys.argv) < 2:
+    print("Usage: python generate.py <pcapng_file>")
+    sys.exit(1)
+pcap_file=sys.argv[1]
 # Read all packets using Scapy
 print(f"Reading packets from {pcap_file}...")
 packets = rdpcap(pcap_file)
@@ -112,7 +115,7 @@ bar_chart.xaxis.major_label_orientation = 1
 # Save bar chart
 output_file("plot6.html")
 save(bar_chart)
-print("Bar chart saved as 'bar_chart.html'.")
+print("Bar chart saved as 'plot6.html'.")
 
 print("Creating data table...")
 ##############################################
@@ -145,7 +148,7 @@ data_table = DataTable(source=table_source, columns=columns, width=500, height=2
 table_layout = column(data_table)
 output_file("plot5.html")
 save(table_layout)
-print("Data table saved as 'data_table.html'.")
+print("Data table saved as 'plot5.html'.")
 
 print("Creating pie chart with increased size...")
 ##############################################
@@ -208,7 +211,7 @@ pie_chart.grid.grid_line_color = None
 # Save pie chart
 output_file("plot4.html")
 save(pie_chart)
-print("Larger pie chart saved as 'pie_chart.html'.")
+print("Larger pie chart saved as 'plot4.html'.")
 
 print("Creating top conversations charts...")
 ##############################################
@@ -580,6 +583,6 @@ else:
     # Save as a standalone HTML file
     output_file("plot7.html")
     save(layout)
-    print("Improved protocol selector dashboard saved as 'protocol_selector_improved.html'.")
+    print("Improved protocol selector dashboard saved as 'plot7.html'.")
 
 print("Analysis complete. All visualizations have been saved.")

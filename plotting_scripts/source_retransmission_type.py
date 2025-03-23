@@ -8,8 +8,10 @@ from bokeh.models import (
     ColumnDataSource, DataTable, TableColumn, HoverTool
 )
 from collections import defaultdict
+
 from bokeh.themes import built_in_themes
 from bokeh.io import curdoc
+import sys
 
 # Apply dark mode theme - add this before creating any figures
 curdoc().theme = built_in_themes["dark_minimal"]
@@ -168,6 +170,15 @@ def create_bokeh_visualization(ip_delays, all_ip_delays):
 
 if __name__ == "__main__":
     pcapng_file = sys.argv[1]  # Update this path
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python generate.py <pcapng_file>")
+        sys.exit(1)
+
+    pcapng_file = sys.argv[1]
     all_ip_delays = analyze_pcapng(pcapng_file)
     significant_delays = filter_significant_delays(all_ip_delays)
     create_bokeh_visualization(significant_delays, all_ip_delays)
+
+if __name__ == "__main__":
+    main()

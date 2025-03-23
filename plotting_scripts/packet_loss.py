@@ -13,6 +13,7 @@ from bokeh.transform import cumsum
 from bokeh.palettes import Category10
 from bokeh.themes import built_in_themes
 from bokeh.io import curdoc
+import sys
 
 # Apply dark mode theme - add this before creating any figures
 curdoc().theme = built_in_themes["dark_minimal"]
@@ -201,7 +202,11 @@ def create_layout(total_loss: dict, ip_loss: dict, total_packets: int):
 
 if __name__ == "__main__":
     pcapng_file = sys.argv[1]  # Replace with your pcapng file path
+    if len(sys.argv) < 2:
+        print("Usage: python generate.py <pcapng_file>")
+        sys.exit(1)
 
+    pcapng_file = sys.argv[1]
     total_loss, ip_loss, total_packets = analyze_pcapng(pcapng_file)
     final_layout = create_layout(total_loss, ip_loss, total_packets)
 
