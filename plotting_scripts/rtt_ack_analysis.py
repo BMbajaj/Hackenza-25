@@ -128,7 +128,11 @@ def style_figure(p, title):
 # ---------------------------
 # Data Extraction: Extract ACK_RTT values and IP packet times.
 # ---------------------------
-pcap_file = "28-1-25-bro-rpi-60ms.pcapng"
+if len(sys.argv) < 2:
+    print("Usage: python generate.py <pcapng_file>")
+    sys.exit(1)
+
+pcap_file = sys.argv[1]
 
 ack_rtt_list = []
 ip_times = []
