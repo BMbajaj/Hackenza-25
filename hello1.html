@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hello1 Page</title>
+    <link rel="stylesheet" href="./App.css" />
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Sidebar (common across pages) -->
+      <div class="sidebar">
+        <div class="logo">
+          <a href="index.html" class="Home-link">NetLogAnalyzer</a>
+        </div>
+        <nav class="nav">
+          <ul>
+            <li>
+              <details>
+                <summary>Category 1</summary>
+                <ul class="dropdown-links">
+                  <li><a href="hello1.html" class="link">Dashboard 1</a></li>
+                  <li><a href="hello2.html" class="link">Dashboard 2</a></li>
+                  <li><a href="hello3.html" class="link">Dashboard 3</a></li>
+                </ul>
+              </details>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <!-- Dashboard / Main View Area -->
+      <div class="dashboard">
+        <!-- Top Bar -->
+        <div class="top-bar">
+          <h2>Network Delay Analysis Dashboard</h2>
+          <div class="actions" id="actionsContainer">
+            <button id="loginBtn" onclick="window.location.href='http://localhost:5000/login'">
+              Login
+            </button>
+            <button>Upload</button>
+          </div>
+        </div>
+        <!-- Plot Area -->
+        <div class="plot-container" id="plotContainer">
+          <!-- If user is logged in, load plot1 for hello1.html -->
+        </div>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const storedName = localStorage.getItem("userName");
+        const storedEmail = localStorage.getItem("userEmail");
+        const actionsDiv = document.getElementById("actionsContainer");
+        const plotContainer = document.getElementById("plotContainer");
+
+        if (storedName && storedEmail) {
+          actionsDiv.innerHTML = `
+            <div class="profile-wrapper">
+              <div class="profile-icon" id="profileIcon">${storedName.charAt(0).toUpperCase()}</div>
+              <div class="profile-dropdown" id="profileDropdown" style="display: none;">
+                <p>${storedName}</p>
+                <button id="logoutBtn">Logout</button>
+              </div>
+            </div>
+            <button>Upload</button>
+          `;
+          document.getElementById("profileIcon").addEventListener("click", function () {
+            const dropdown = document.getElementById("profileDropdown");
+            dropdown.style.display = (dropdown.style.display === "none" ? "block" : "none");
+          });
+          document.getElementById("logoutBtn").addEventListener("click", function () {
+            localStorage.removeItem("userName");
+            localStorage.removeItem("userEmail");
+            window.location.reload();
+          });
+          // Load plot1 for hello1.html
+          plotContainer.innerHTML = `<iframe src="http://localhost:5000/userPlot1?email=${encodeURIComponent(storedEmail)}" style="width: 100%; height: 80vh; border: none;"></iframe>`;
+        } else {
+          actionsDiv.innerHTML = `
+            <button id="loginBtn" onclick="window.location.href='http://localhost:5000/login'">Login</button>
+            <button>Upload</button>
+          `;
+          plotContainer.innerHTML = `<p style="text-align:center; font-size:1.2rem; margin-top: 2rem;">Please log in to view your plot.</p>`;
+        }
+      });
+    </script>
+  </body>
+</html>
