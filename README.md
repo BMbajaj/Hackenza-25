@@ -21,7 +21,19 @@ NetDelayAnalyser is a web-based packet capture analysis tool.
     nodejs≥20,
     bootstrap,
     react-router-dom
-- To initialize the node js + mongodb servers: open two separate cmd line panes; paste npm run dev in the first and npm run build in the second. Finally, run node server.js in the second pane. Now visit [localhost:5137](http://localhost:5173/) to visit the site.
+- To initialize the node js + mongodb servers: open two separate cmd line panes; paste npm run dev in the first and npm run build in the second. Finally, run node server.js in the second pane. Now visit [localhost:5137](http://localhost:5000/) to visit the site.
+- npm install
+if this shows some errors due to missing dependencies 
+    - npm install vite
+    - npm install bootstrap
+    - npm install react-router-dom
+    - npm install multer
+    - npm install mongoose
+- Front end will work with installation of npm
+- For back end mongo db is needed. Refer to
+    - https://www.mongodb.com/try/download/community
+    - https://www.mongodb.com/try/download/shell
+
   
 ## Feature Details
 
